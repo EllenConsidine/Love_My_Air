@@ -97,7 +97,7 @@ run_LOO<- function(type, train_pos, name){
                                             .min.node.size = 5 ),
                     metric = "RMSE", importance = "permutation")
 
-  saveRDS(my_model, paste0("C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\No-outliers_", type, "_", name, ".rds"))
+  saveRDS(my_model, paste0("~/No-outliers_", type, "_", name, ".rds"))
 
   stopCluster(cluster)
 
