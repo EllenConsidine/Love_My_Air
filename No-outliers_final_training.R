@@ -1,6 +1,6 @@
 
 #Read in and format data:
-DATA<- read.csv("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/No-outliers_final_data.csv")
+DATA<- read.csv("~/No-outliers_final_data.csv")
 # DATA$Time<- cos(as.numeric(DATA$Time)*pi/24)
 # DATA$Month<- cos(as.numeric(DATA$Month)*pi/12)
 DATA$Date<- as.Date(DATA$Date)
@@ -59,7 +59,7 @@ run_LOO(type = "five-roads", train_pos = c(1:dim(dataset)[1]), name = "None")
 run_LOO(type = "all-vars", train_pos = c(1:dim(dataset)[1]), name = "None")
 
 #Leave one out (LOO):
-source("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/LOO_functions.R")
+source("~/LOO_functions.R")
 
 sensors<- c("NJH", "LaCasa", "I25.1", "I25.2", "I25.3")
 
