@@ -2,7 +2,7 @@ library(caret)
 library(parallel)
 library(doParallel)
 
-DATA<- read.csv("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/No-outliers_final_data.csv")
+DATA<- read.csv("~/No-outliers_final_data.csv")
 # DATA$Time<- cos(as.numeric(DATA$Time)*pi/24)
 # DATA$Month<- cos(as.numeric(DATA$Month)*pi/12)
 DATA$Date<- as.Date(DATA$Date)
@@ -66,7 +66,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(lm0DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_SLR_no-outliers.csv",
+write.csv(lm0DF, "~/OTF_not-avg_SLR_no-outliers.csv",
           row.names = FALSE)
 
 lm0DF[which(lm0DF$`Testing RMSE` == min(lm0DF$`Testing RMSE`)),]
@@ -126,7 +126,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(lmDF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_MLR1_no-outliers.csv",
+write.csv(lmDF, "~/OTF_not-avg_MLR1_no-outliers.csv",
           row.names = FALSE)
 
 lmDF[which(lmDF$`Testing RMSE` == min(lmDF$`Testing RMSE`)),]
@@ -188,7 +188,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
 ##In predict.lm(model, testing) :
 # prediction from a rank-deficient fit may be misleading
 
-write.csv(lm2DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_MLR2_no-outliers.csv",
+write.csv(lm2DF, "~/OTF_not-avg_MLR2_no-outliers.csv",
           row.names = FALSE)
 
 lm2DF[which(lm2DF$`Testing RMSE` == min(lm2DF$`Testing RMSE`)),]
@@ -250,7 +250,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
 ##In predict.lm(model, testing) :
 # prediction from a rank-deficient fit may be misleading
 
-write.csv(lm2_5DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_MLR2-5_no-outliers.csv",
+write.csv(lm2_5DF, "~/OTF_not-avg_MLR2-5_no-outliers.csv",
           row.names = FALSE)
 
 lm2_5DF[which(lm2_5DF$`Testing RMSE` == min(lm2_5DF$`Testing RMSE`)),]
@@ -322,7 +322,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
 # nlminb problem, convergence error code = 1
 # message = false convergence (8)
 
-write.csv(reDF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RE_no-outliers.csv",
+write.csv(reDF, "~/OTF_not-avg_RE_no-outliers.csv",
           row.names = FALSE)
 
 reDF[which(reDF$`Testing RMSE` == min(reDF$`Testing RMSE`)),]
@@ -392,7 +392,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(rf1DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RF1_no-outliers.csv",
+write.csv(rf1DF, "~/OTF_not-avg_RF1_no-outliers.csv",
           row.names = FALSE)
 
 rf1DF[which(rf1DF$`Testing RMSE` == min(rf1DF$`Testing RMSE`)),]
@@ -468,7 +468,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(rf2DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RF2_no-outliers.csv",
+write.csv(rf2DF, "~/OTF_not-avg_RF2_no-outliers.csv",
           row.names = FALSE)
 
 rf2DF[which(rf2DF$`Testing RMSE` == min(rf2DF$`Testing RMSE`)),]
@@ -546,7 +546,7 @@ rf2DF[which(rf2DF$`Testing R2` == max(rf2DF$`Testing R2`)),]
 #   i<- i+4
 # }
 # 
-# write.csv(rf3DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RF3_no-outliers.csv",
+# write.csv(rf3DF, "~/OTF_not-avg_RF3_no-outliers.csv",
 #           row.names = FALSE)
 # 
 # rf3DF[which(rf3DF$`Testing RMSE` == min(rf3DF$`Testing RMSE`)),]
@@ -624,7 +624,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(rf3DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RF3_no-outliers.csv",
+write.csv(rf3DF, "~/OTF_not-avg_RF3_no-outliers.csv",
           row.names = FALSE)
 
 rf3DF[which(rf3DF$`Testing RMSE` == min(rf3DF$`Testing RMSE`)),]
@@ -702,7 +702,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(rf3_5DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RF3-5_no-outliers.csv",
+write.csv(rf3_5DF, "~/OTF_not-avg_RF3-5_no-outliers.csv",
           row.names = FALSE)
 
 rf3_5DF[which(rf3_5DF$`Testing RMSE` == min(rf3_5DF$`Testing RMSE`)),]
@@ -777,7 +777,7 @@ for(t in c(1:4,8,12,16)){ #c(1:4,8,12,16)
   i<- i+4
 }
 
-write.csv(rf4DF, "C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\OTF_not-avg_RF4_no-outliers.csv",
+write.csv(rf4DF, "~/OTF_not-avg_RF4_no-outliers.csv",
           row.names = FALSE)
 
 rf4DF[which(rf4DF$`Testing RMSE` == min(rf4DF$`Testing RMSE`)),]
@@ -785,7 +785,7 @@ rf4DF[which(rf4DF$`Testing R2` == max(rf4DF$`Testing R2`)),]
 
 #Plot:
 
-data<- read.csv("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/OTF_not-avg_MLR2_no-outliers.csv")
+data<- read.csv("~/OTF_not-avg_MLR2_no-outliers.csv")
 
 library(raster)
 library(RColorBrewer)
