@@ -1,5 +1,5 @@
 #Read in data:
-test<- read.csv("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/Cleaned_test_data.csv")
+test<- read.csv("~/Cleaned_test_data.csv")
 
 names(test)<- c("ID", "DateTime", "PM25", names(test)[4:25])
 
@@ -27,11 +27,11 @@ Test<- as.data.frame(test[,c("Time", "Month", "Weekend", "PM25", "Temperature", 
               "AirNow")])
 
 #Read in models:
-all_roads_model<- readRDS("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/No-outliers_all-vars_None.rds") #Full_random-folds.rds
-five_roads_model<- readRDS("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/No-outliers_five-roads_None.rds") #Full_random-folds_fewer_roads.rds
-one_road_model<- readRDS("C:/Users/ellen/OneDrive/MyDocs/Earth Lab Internship/AQ-CAN/Air quality data/No-outliers_one-road_None.rds")
-no_roads_model<- readRDS("C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\No-outliers_no-roadsNone.rds") #Calibration_11-14-19_FULL_no-roads.rds
-no_folds_model<- readRDS("C:\\Users\\ellen\\OneDrive\\MyDocs\\Earth Lab Internship\\AQ-CAN\\Air quality data\\No-outliers_no-folds_None.rds") #Calibration_11-14-19_FULL_no-folds.rds
+all_roads_model<- readRDS("~/No-outliers_all-vars_None.rds")
+five_roads_model<- readRDS("~/No-outliers_five-roads_None.rds")
+one_road_model<- readRDS("~/No-outliers_one-road_None.rds")
+no_roads_model<- readRDS("~/No-outliers_no-roadsNone.rds")
+no_folds_model<- readRDS("~/No-outliers_no-folds_None.rds")
 
 preds1<- data.frame(predict(all_roads_model, Test))
 preds2<- data.frame(predict(five_roads_model, Test))
@@ -44,6 +44,8 @@ preds5<- data.frame(predict(no_folds_model, Test))
 # compare3<- cbind(preds3[,1], Test$AirNow)
 # compare4<- cbind(preds4[,1], Test$AirNow)
 # compare5<- cbind(preds5[,1], Test$AirNow)
+
+#Change out these depending on the sensor:
 CAMP_pos<- which(test$ID == "CAMP")
 compare1<- cbind(preds1[CAMP_pos,1], Test$AirNow[CAMP_pos])
 compare2<- cbind(preds2[CAMP_pos,1], Test$AirNow[CAMP_pos])
@@ -111,7 +113,7 @@ performance(nRE2, Test[which(test$ID == "CAMP"),])
 performance(nRE2, Test[which(test$ID == "I25_Denver"),])
 
 
-#Make on-the-fly predictions:
+### Make on-the-fly predictions:
 library(nlme)
 library(caret)
 library(parallel)
@@ -345,12 +347,12 @@ results(LM1_5_camp)
 LM1_5_denv<- Test_set(3,1,"MLR1-5", "I25_Denver")
 results(LM1_5_denv)
 
-LM2_camp<- Test_set(3,1,"MLR2", "CAMP") #Rank-deficient fit
+LM2_camp<- Test_set(3,1,"MLR2", "CAMP") 
 results(LM2_camp)
 LM2_denv<- Test_set(3,1,"MLR2", "I25_Denver")
 results(LM2_denv)
 
-RE_camp<- Test_set(3,1,"RE", "CAMP") #Confounding
+RE_camp<- Test_set(3,1,"RE", "CAMP")
 results(RE_camp)
 RE_denv<- Test_set(3,1,"RE", "I25_Denver")
 results(RE_denv)
