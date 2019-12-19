@@ -16,7 +16,8 @@ test$Month<- cos(as.numeric(test$Month)*pi/12)
 test<- test[-which(test$AirNow == 0),] #Removed 22 points
 
 test<- test[-which(((test$Date == "2019-10-10")|(test$Date == "2019-10-11")|
-                      (test$Date == "2019-10-27"))&(test$ID == "I25_Denver")),]
+                      (test$Date == "2019-10-27")|(test$Date == "2019-10-29"))
+                   &(test$ID == "I25_Denver")),]
 #This ^^^ got rid of 41 observations
 
 Test<- as.data.frame(test[,c("Time", "Month", "Weekend", "PM25", "Temperature", "Humidity", 
