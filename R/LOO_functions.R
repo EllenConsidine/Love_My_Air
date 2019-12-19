@@ -6,7 +6,7 @@ LOO_linear<- function(type, test_pos, name){
   training<- DATA[-test_pos,]
   testing<- DATA[test_pos,]
   
-  if(type = "SLR_1"){
+  if(type == "SLR_1"){
     LM<- lm(AirNow ~ PM25, training)
   }else if(type = "MLR_1"){
     LM<- lm(AirNow ~ PM25 + Temperature + Humidity, training)
