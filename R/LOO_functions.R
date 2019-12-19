@@ -8,7 +8,7 @@ LOO_linear<- function(type, test_pos, name){
   
   if(type == "SLR_1"){
     LM<- lm(AirNow ~ PM25, training)
-  }else if(type = "MLR_1"){
+  }else if(type == "MLR_1"){
     LM<- lm(AirNow ~ PM25 + Temperature + Humidity, training)
   }else if(type == "MLR_2"){
     LM<- lm(AirNow ~ PM25 + Temperature + Humidity + Month + Weekend + Time, training)
