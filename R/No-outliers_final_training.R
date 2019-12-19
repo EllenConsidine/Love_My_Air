@@ -12,6 +12,14 @@ weeks<- seq.Date(min(DATA$Date), max(DATA$Date), by = 7)
 
 dataset<- DATA[,-which(names(DATA)%in%c("Date", "ID"))]
 
+#Data summary:
+for(s in unique(DATA$ID)){
+  print(s)
+  data<- DATA[which(DATA$ID == s),]
+  print(quantile(data[,"AirNow"])) #Or PM25
+  print(sd(data[,"AirNow"])) #Or PM25
+}
+
 #Linear models:
 LM0<- lm(AirNow ~ PM25, DATA)
 LM1<- lm(AirNow ~ PM25 + Temperature + Humidity, DATA)
