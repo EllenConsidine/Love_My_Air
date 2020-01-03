@@ -12,3 +12,5 @@ R scripts (in order):
 3. No-outliers_final_training.R (gets functions from LOO_functions.R)
 4. Final_sensor_calibration_OTF.R
 5. Test_set.R
+
+Python code: DDPHE_code.ipynb illustrates how to run the final long-term and real-time (on-the-fly) calibration models.
