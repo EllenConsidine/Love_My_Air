@@ -2,7 +2,7 @@
 Calibrating air pollution sensors for the Denver Department of Public Health and Environment
 
 Data needed to run these analyses:
-* Hourly air quality, temperature and humidity from the Denver Department of Public Health and Environment (DDPHE) Canary-S sensors and the EPA collocated Federal Reference Monitors.
+* Hourly air quality, temperature and humidity from the Denver Department of Public Health and Environment (DDPHE) Canary-S sensors and the EPA collocated federal equivalence method (FEM) monitors.
 * Shapefile of Denver streets from the [Denver Open Data Catalog](https://www.denvergov.org/opendata/dataset/city-and-county-of-denver-street-centerline)
 * Coordinates (latitude, longitude) of the sensor locations
 
