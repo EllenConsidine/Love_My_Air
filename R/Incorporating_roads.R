@@ -4,7 +4,7 @@ library(rgeos)
 library(rgdal)
 
 #Read in monitor coordinates
-LL<- read.csv("~/Collo_LatLon.csv")
+LL<- read.csv("~/Data/Collo_LatLon.csv")
 
 #Project sensor coordinates
 monitors<- SpatialPoints(LL[4:5,2:3])
@@ -25,9 +25,9 @@ Monitors<- spTransform(monitors, CRS( "+proj=aea +lat_1=29.5 +lat_2=45.5 +lat_0=
 # writeOGR(obj = medium, layer = "Collector_roads", "~/DENVER_map", driver = "ESRI Shapefile")
 # writeOGR(obj = small, layer = "Local_roads", "~/DENVER_map", driver = "ESRI Shapefile")
 
-large<- shapefile("~/Arterial_roads.shp")
-medium<- shapefile("~/Collector_roads.shp")
-small<- shapefile("~/Local_roads.shp")
+large<- shapefile("~/Data/Arterial_roads.shp")
+medium<- shapefile("~/Data/Collector_roads.shp")
+small<- shapefile("~/Data/Local_roads.shp")
 
 ##Make buffers 
 #Note: this projection is in meters
@@ -51,4 +51,4 @@ names(LL)<- c("Sensor", "Longitude", "Latitude", sapply(Buffers, function(x){c(p
                                                                      paste0("Croad_", as.character(x)),
                                                                      paste0("Lroad_", as.character(x)))}))
 
-write.csv(LL, "~/Road_lengths_3.csv", row.names = FALSE)
+write.csv(LL, "~/Data/Road_lengths_3.csv", row.names = FALSE)
