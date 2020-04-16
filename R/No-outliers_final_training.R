@@ -1,6 +1,6 @@
 
 #Read in and format data:
-DATA<- read.csv("~/No-outliers_final_data.csv")
+DATA<- read.csv("~/Data/No-outliers_final_data.csv")
 # DATA$Time<- cos(as.numeric(DATA$Time)*pi/24)
 # DATA$Month<- cos(as.numeric(DATA$Month)*pi/12)
 DATA$Date<- as.Date(DATA$Date)
