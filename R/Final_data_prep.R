@@ -3,7 +3,7 @@ library(chron)
 library(lubridate)
 library(dplyr)
 
-##Collocated
+## Format collocated data
 collo<- read.csv("~/Raw_collocated_data.csv")
 collo_names<- c("NJH", "I25.1", "I25.2", "I25.3", "LaCasa")
 names(collo)<- c("DateTime", "PM25", "Temperature", "Humidity", "AirNow",
@@ -31,28 +31,47 @@ C2$Weekend<- is.weekend(C2$Date)
 ColloR<- merge(C2, roads, by = "Sensor")
 write.csv(ColloR, "~/Clean_collocated_hourly_data.csv", row.names = FALSE)
 
-## Removing outliers:
-#first get data from both Canary-S sensors (PM2.5 A and B)...
+## Remove outliers (skip this section when running sensitivity analysis)
+#First get data from both Canary-S sensors (PM2.5 A and B)...
+data<- read.csv("~two-pm25-sensors.csv")
 
+names(data)<- c("DateTime", rep(c("S1", "S2"),5))
+data$DateTime<- as.character(data$DateTime)
+
+Data<- rbind(data[,2:3], data[,4:5], data[,6:7], data[8:9], data[10:11])
+DATA<- cbind(rep(data[,1],5), 
+             rep(c("NJH", "I25.1", "I25.2", "I25.3", "LaCasa"), each = dim(data)[1]),
+             Data)
+names(DATA)<- c("DateTime", "ID", "S1", "S2")
+DATA2<- DATA[apply(DATA[,3:4], 1, function(y){sum(is.na(y)) < 2}),]
+
+#Format like other data:
+DATA2$Date<- as.Date(sapply(DATA2$DateTime, function(x){strsplit(as.character(x), " ")[[1]][1]}), 
+                     format = "%Y-%m-%d")
+DATA2$Time<- sapply(DATA2$DateTime, function(x){strsplit(strsplit(as.character(x), " ")[[1]][2], ":")[[1]][1]})
+DATA2$Time<- cos(as.numeric(DATA2$Time)*pi/24)
+
+#Identify jumps
 pos<- c()
-for(i in 2:length(both$S1)){
-  if( (both$S1[i] >= 3*both$S1[i-1])|(both$S1[i] < (1/3)*both$S1[i-1]) ){
+for(i in 2:length(DATA2$S1)){
+  if( (DATA2$S1[i] >= 3*DATA2$S1[i-1])|(DATA2$S1[i] < (1/3)*DATA2$S1[i-1]) ){
     pos<- append(pos, i)
   }
 }
 
+#Identify gaps
 issues<- c()
 for(p in pos){
-  if(abs(both$S2[p]-both$S1[p]) > 15){
+  if(abs(DATA2$S2[p]-DATA2$S1[p]) > 15){
     issues<- append(issues, p)
   }
 }
 
-both[issues,c("Temperature", "Humidity", "S1", "S2", "AirNow", "ID", "DateTime")]
-plot(both$DateTime, both$S1)
-points(both[issues, "DateTime"], both[issues, "S1"], col = "red", pch = 16)
+DATA2[issues,c("Temperature", "Humidity", "S1", "S2", "AirNow", "ID", "DateTime")]
+plot(DATA2$DateTime, DATA2$S1)
+points(DATA2[issues, "DateTime"], DATA2[issues, "S1"], col = "red", pch = 16)
 
-write.csv(both[-issues,names(both)[1:21]], "~/No-outliers_final_data.csv", row.names = FALSE)
+write.csv(DATA2[-issues,names(DATA2)[1:21]], "~/No-outliers_final_data.csv", row.names = FALSE)
 
 
 ## Cleaning test set:
