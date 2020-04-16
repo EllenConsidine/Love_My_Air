@@ -1,5 +1,5 @@
 #Read in data:
-test<- read.csv("~/Cleaned_test_data.csv")
+test<- read.csv("~/Data/Cleaned_test_data.csv")
 
 names(test)<- c("ID", "DateTime", "PM25", names(test)[4:25])
 
