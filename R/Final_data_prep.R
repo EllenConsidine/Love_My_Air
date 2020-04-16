@@ -4,7 +4,7 @@ library(lubridate)
 library(dplyr)
 
 ## Format collocated data
-collo<- read.csv("~/Raw_collocated_data.csv")
+collo<- read.csv("~/Data/Raw_collocated_data.csv")
 collo_names<- c("NJH", "I25.1", "I25.2", "I25.3", "LaCasa")
 names(collo)<- c("DateTime", "PM25", "Temperature", "Humidity", "AirNow",
                  "PM25", "Temperature", "Humidity", "PM25", "Temperature", "Humidity", 
@@ -29,11 +29,11 @@ C2$Time<- chron(times = sapply(C2[,1], function(x){paste0(strsplit(as.character(
 C2$Month<- sapply(C2$Date, function(x){month(as.POSIXct(x))})
 C2$Weekend<- is.weekend(C2$Date)
 ColloR<- merge(C2, roads, by = "Sensor")
-write.csv(ColloR, "~/Clean_collocated_hourly_data.csv", row.names = FALSE)
+write.csv(ColloR, "~/Data/Clean_collocated_hourly_data.csv", row.names = FALSE)
 
 ## Remove outliers (skip this section when running sensitivity analysis)
 #First get data from both Canary-S sensors (PM2.5 A and B)...
-data<- read.csv("~two-pm25-sensors.csv")
+data<- read.csv("~/Data/two-pm25-sensors.csv")
 
 names(data)<- c("DateTime", rep(c("S1", "S2"),5))
 data$DateTime<- as.character(data$DateTime)
@@ -71,13 +71,13 @@ DATA2[issues,c("Temperature", "Humidity", "S1", "S2", "AirNow", "ID", "DateTime"
 plot(DATA2$DateTime, DATA2$S1)
 points(DATA2[issues, "DateTime"], DATA2[issues, "S1"], col = "red", pch = 16)
 
-write.csv(DATA2[-issues,names(DATA2)[1:21]], "~/No-outliers_final_data.csv", row.names = FALSE)
+write.csv(DATA2[-issues,names(DATA2)[1:21]], "~/Data/No-outliers_final_data.csv", row.names = FALSE)
 
 
 ## Cleaning test set:
 
-test<- read.csv("~/test-set.csv")
-test2<- read.csv("~/test-set_Nov-Dec.csv")
+test<- read.csv("~/Data/test-set.csv")
+test2<- read.csv("~/Data/test-set_Nov-Dec.csv")
 
 Test<- rbind(test, test2)
 
@@ -108,10 +108,10 @@ Test$Month<- sapply(Test$Date, function(x){month(as.POSIXct(x))})
 Test$Weekend<- is.weekend(Test$Date)
 
 #Incorporate roads:
-roads<- read.csv("~/Road_lengths_3.csv")
+roads<- read.csv("~/Data/Road_lengths_3.csv")
 
 # Test$ID[which(Test$ID == "I25D")]<- "I25_Denver"
 with_roads<- merge(Test, roads, by.x = "ID", by.y = "Sensor")
 
-write.csv(with_roads, "~/Cleaned_test_data.csv", row.names = FALSE)
+write.csv(with_roads, "~/Data/Cleaned_test_data.csv", row.names = FALSE)
 
