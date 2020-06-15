@@ -29,6 +29,8 @@ C2$Time<- chron(times = sapply(C2[,1], function(x){paste0(strsplit(as.character(
 C2$Month<- sapply(C2$Date, function(x){month(as.POSIXct(x))})
 C2$Weekend<- is.weekend(C2$Date)
 ColloR<- merge(C2, roads, by = "Sensor")
+ColloR$Time<- cos(as.numeric(ColloR$Time)*2*pi/24)
+ColloR$Month<- cos(as.numeric(ColloR$Month)*2*pi/12)
 write.csv(ColloR, "~/Data/Clean_collocated_hourly_data.csv", row.names = FALSE)
 
 ## Remove outliers (skip this section when running sensitivity analysis)
@@ -50,6 +52,8 @@ DATA2$Date<- as.Date(sapply(DATA2$DateTime, function(x){strsplit(as.character(x)
                      format = "%Y-%m-%d")
 DATA2$Time<- sapply(DATA2$DateTime, function(x){strsplit(strsplit(as.character(x), " ")[[1]][2], ":")[[1]][1]})
 DATA2$Time<- cos(as.numeric(DATA2$Time)*2*pi/24)
+DATA2$Month<- sapply(DATA2$Date, function(x){month(as.POSIXct(x))})
+DATA2$Month<- cos(as.numeric(DATA2$Month)*2*pi/12)
 
 #Identify jumps
 pos<- c()
