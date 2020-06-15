@@ -49,7 +49,7 @@ DATA2<- DATA[apply(DATA[,3:4], 1, function(y){sum(is.na(y)) < 2}),]
 DATA2$Date<- as.Date(sapply(DATA2$DateTime, function(x){strsplit(as.character(x), " ")[[1]][1]}), 
                      format = "%Y-%m-%d")
 DATA2$Time<- sapply(DATA2$DateTime, function(x){strsplit(strsplit(as.character(x), " ")[[1]][2], ":")[[1]][1]})
-DATA2$Time<- cos(as.numeric(DATA2$Time)*pi/24)
+DATA2$Time<- cos(as.numeric(DATA2$Time)*2*pi/24)
 
 #Identify jumps
 pos<- c()
