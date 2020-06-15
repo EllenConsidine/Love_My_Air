@@ -10,8 +10,8 @@ test[,-which(names(test) %in% c("ID", "DateTime", "Date", "Weekend"))]<-
 
 test$Date<- as.Date(test$Date)
 
-test$Time<- cos(as.numeric(test$Time)*pi/24)
-test$Month<- cos(as.numeric(test$Month)*pi/12)
+test$Time<- cos(as.numeric(test$Time)*2*pi/24)
+test$Month<- cos(as.numeric(test$Month)*2*pi/12)
 
 test<- test[-which(test$AirNow == 0),] #Removed 22 points
 
