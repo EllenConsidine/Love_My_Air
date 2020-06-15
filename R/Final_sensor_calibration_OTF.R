@@ -3,8 +3,6 @@ library(parallel)
 library(doParallel)
 
 DATA<- read.csv("~/Data/No-outliers_final_data.csv")
-# DATA$Time<- cos(as.numeric(DATA$Time)*pi/24)
-# DATA$Month<- cos(as.numeric(DATA$Month)*pi/12)
 DATA$Date<- as.Date(DATA$Date)
 
 dataset<- DATA[,-which(names(DATA)%in%c("Date", "ID"))]
