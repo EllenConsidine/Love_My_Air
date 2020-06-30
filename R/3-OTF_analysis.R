@@ -229,7 +229,7 @@ for(i in 1:2){
   RE_OTF(paste0("RE",i))
 }
 
-for(i in 1:7){
+for(i in 1:4){
   RF_OTF(paste0("RF",i))
 }
 
