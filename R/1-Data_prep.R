@@ -33,6 +33,8 @@ ColloR<- merge(C2, roads, by = "Sensor")
 ColloR$Time<- as.numeric(sapply(as.character(ColloR$Time), function(s){strsplit(s, ":")[[1]][1]}))
 ColloR$cos_Time<- cos(as.numeric(ColloR$Time)*2*pi/24)
 ColloR$cos_Month<- cos(as.numeric(ColloR$Month)*2*pi/12)
+ColloR$sin_Time<- sin(as.numeric(ColloR$Time)*2*pi/24)
+ColloR$sin_Month<- sin(as.numeric(ColloR$Month)*2*pi/12)
 write.csv(ColloR, "Data/Clean_collocated_hourly_data.csv", row.names = FALSE)
 
 
@@ -72,6 +74,8 @@ Test$Weekend<- is.weekend(Test$Date)
 Test$Time<- as.numeric(sapply(as.character(Test$Time), function(s){strsplit(s, ":")[[1]][1]}))
 Test$cos_Time<- cos(as.numeric(Test$Time)*2*pi/24)
 Test$cos_Month<- cos(as.numeric(Test$Month)*2*pi/12)
+Test$sin_Time<- sin(as.numeric(Test$Time)*2*pi/24)
+Test$sin_Month<- sin(as.numeric(Test$Month)*2*pi/12)
 
 with_roads<- merge(Test, roads, by.x = "ID", by.y = "Sensor")
 

@@ -2,6 +2,10 @@
 
 LOO_linear<- function(type, test_pos, name){
   print(type)
+  print(paste("Leaving out", name))
+  training<- DATA[-test_pos,]
+  testing<- DATA[test_pos,]
+  
   if(type == "LR1"){
     LM<- lm(AirNow ~ PM25, training)
   }else if(type == "LR2"){
@@ -11,12 +15,12 @@ LOO_linear<- function(type, test_pos, name){
   }else if(type == "LR4"){
     LM<- lm(AirNow ~ PM25 + Temperature + Humidity + Aroad_500, training)
   }else if(type == "LR5"){
-    LM<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + Weekend + cos_Time, training)
+    LM<- lm(AirNow ~ PM25 + Temperature + Humidity + Weekend + cos_Time + cos_Month + sin_Month, training)
   }else if(type == "LR6"){
-    LM<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + Weekend + cos_Time
+    LM<- lm(AirNow ~ PM25 + Temperature + Humidity + Weekend + cos_Time + cos_Month + sin_Month
             + Near_hwy, training)
   }else if(type == "LR7"){
-    LM<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + Weekend + cos_Time
+    LM<- lm(AirNow ~ PM25 + Temperature + Humidity + Weekend + cos_Time + cos_Month + sin_Month
             + Aroad_500, training)
   }
   
@@ -28,7 +32,7 @@ LOO_linear<- function(type, test_pos, name){
   print(round(cor(preds, obs)^2,3))
 }
 
-LOO_hlm<- function(test_pos, name){
+LOO_hlm<- function(type, test_pos, name){
   print(type)
   print(paste("Leaving out", name))
   training<- DATA[-test_pos,]
@@ -41,7 +45,7 @@ LOO_hlm<- function(test_pos, name){
     RE<- lme(AirNow ~ PM25 + Temperature + Humidity, 
              data = DATA, random = ~1 + PM25| ID)
   }else if(type == "RE3"){
-    RE<- lme(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend, 
+    RE<- lme(AirNow ~ PM25 + Temperature + Humidity + Weekend + cos_Time + cos_Month, 
              data = DATA, random = ~1 + PM25| ID)
   }
   
@@ -56,29 +60,20 @@ run_LOO<- function(type, train_pos, name){
     vars<- c("PM25", "Temperature", "Humidity", "AirNow")
     Mtry<- 3
   }else if(type == "RF2"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow")
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow")
     Mtry<- 4
   }else if(type == "RF3"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
              "Near_hwy")
     Mtry<- 4
   }else if(type == "RF4"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
              "Aroad_500")
     Mtry<- 4
   }else if(type == "RF5"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
-             "Near_hwy", "Hwy_rush")
-    Mtry<- 7
-  }else if(type == "RF6"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
              "Aroad_500", "Aroad_50", "Lroad_250", "Lroad_100", "Lroad_50")
     Mtry<- 7
-  }else if(type == "RF7"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow",
-             "Aroad_500", "Aroad_50", "Lroad_250", "Lroad_100", "Lroad_50",
-             "Hwy_rush", "Rush_hour")
-    Mtry<- 10
   }
   
   if(name != "None"){
@@ -99,8 +94,6 @@ run_LOO<- function(type, train_pos, name){
                                             .min.node.size = 5 ),
                     metric = "RMSE", importance = "permutation")
 
-  saveRDS(my_model, paste0("Models/Archived_", type, "_", name, ".rds"))
-
   print(my_model$results)
   
   if(name != "None"){
@@ -109,6 +102,8 @@ run_LOO<- function(type, train_pos, name){
     resids<- (compare[,1] - compare[,2])
     print(paste("Testing set R^2 =", round(R2(pred = compare[,1], obs = compare[,2]), digits = 4)))
     print(paste("Testing set RMSE =", round(sqrt(mean(resids^2)), digits = 4)))
+  }else{
+    saveRDS(my_model, paste0("Models/Archived_", type, "_", name, ".rds"))
   }
   
 }

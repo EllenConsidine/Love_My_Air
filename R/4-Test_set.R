@@ -2,7 +2,7 @@ library(dplyr)
 
 #Read in data:
 test<- read.csv("Data/Cleaned_test_data.csv")
-names(test)<- c("ID", "DateTime", "PM25", names(test)[4:25])
+names(test)<- c("ID", "DateTime", "PM25", names(test)[4:29])
 
 test$Date<- as.Date(test$Date)
 
@@ -13,40 +13,50 @@ near_hwy<- data.frame(ID=c("CAMP", "I25_Denver"),
                       Near_hwy=c(FALSE, TRUE))
 
 test<- inner_join(test, near_hwy, by = "ID")
-test$Rush_hour<- test$Weekend & (test$Time %in% c(8:9, 16:18))
-test$Hwy_rush<- test$Near_hwy & test$Rush_hour
 
-Test<- as.data.frame(test[,c("Time", "Month", "Weekend", "PM25", "Temperature", "Humidity", 
+Test<- as.data.frame(test[,c("cos_Time", "sin_Time", "cos_Month", "sin_Month", 
+                             "Weekend", "PM25", "Temperature", "Humidity", 
               "Aroad_50", "Croad_50", "Lroad_50",
               "Aroad_100", "Croad_100", "Lroad_100", 
               "Aroad_250", "Croad_250", "Lroad_250", 
               "Aroad_500", "Croad_500", "Lroad_500",
-              "AirNow")])
+              "AirNow", "Near_hwy")])
 
 #Read in models:
-RF1< readRDS("Models/Archived_RF1_None.rds")
-RF2< readRDS("Models/Archived_RF2_None.rds")
-RF3< readRDS("Models/Archived_RF3_None.rds")
-RF4< readRDS("Models/Archived_RF4_None.rds")
-RF5< readRDS("Models/Archived_RF5_None.rds")
-RF6< readRDS("Models/Archived_RF6_None.rds")
-RF7< readRDS("Models/Archived_RF7_None.rds")
+RF1<- readRDS("Models/Archived_RF1_None.rds")
+RF2<- readRDS("Models/Archived_RF2_None.rds")
+RF3<- readRDS("Models/Archived_RF3_None.rds")
+RF4<- readRDS("Models/Archived_RF4_None.rds")
+RF5<- readRDS("Models/Archived_RF5_None.rds")
 
 preds1<- data.frame(predict(RF1, Test))
 preds2<- data.frame(predict(RF2, Test))
 preds3<- data.frame(predict(RF3, Test))
 preds4<- data.frame(predict(RF4, Test))
 preds5<- data.frame(predict(RF5, Test))
-preds6<- data.frame(predict(RF6, Test))
-preds7<- data.frame(predict(RF7, Test))
 
+##Both test set sensors:
 # compare1<- cbind(preds1[,1], Test$AirNow)
 # compare2<- cbind(preds2[,1], Test$AirNow)
 # compare3<- cbind(preds3[,1], Test$AirNow)
-# compare4<- cbind(preds4[,1], Test$AirNow)
+compare4<- cbind(preds4[,1], Test$AirNow)
 # compare5<- cbind(preds5[,1], Test$AirNow)
-# compare6<- cbind(preds6[,1], Test$AirNow)
-# compare7<- cbind(preds7[,1], Test$AirNow)
+
+##Create plots:
+my_max<- max(c(DATA$AirNow, preds4[,1]))
+tr_results<- RF4$pred
+
+windows()
+par(mfrow=c(1,2))
+plot(tr_results$obs, tr_results$pred, 
+     xlab = "Observed PM2.5", ylab = "Predicted PM2.5",
+     main = "Training Set", xlim=c(0,my_max), ylim=c(0,my_max))
+abline(0,1)
+plot(compare4[,2], compare4[,1], 
+     xlab = "Observed PM2.5", ylab = "Predicted PM2.5",
+     main = "Testing Set", xlim=c(0,my_max), ylim=c(0,my_max))
+abline(0,1)
+dev.off()
 
 #Change out these depending on the sensor:
 CAMP_pos<- which(test$ID == "CAMP")
@@ -55,8 +65,6 @@ compare2<- cbind(preds2[CAMP_pos,1], Test$AirNow[CAMP_pos])
 compare3<- cbind(preds3[CAMP_pos,1], Test$AirNow[CAMP_pos])
 compare4<- cbind(preds4[CAMP_pos,1], Test$AirNow[CAMP_pos])
 compare5<- cbind(preds5[CAMP_pos,1], Test$AirNow[CAMP_pos])
-compare6<- cbind(preds6[CAMP_pos,1], Test$AirNow[CAMP_pos])
-compare7<- cbind(preds7[CAMP_pos,1], Test$AirNow[CAMP_pos])
 
 I25D_pos<- which(test$ID == "I25_Denver")
 compare1<- cbind(preds1[I25D_pos,1], Test$AirNow[I25D_pos])
@@ -64,8 +72,6 @@ compare2<- cbind(preds2[I25D_pos,1], Test$AirNow[I25D_pos])
 compare3<- cbind(preds3[I25D_pos,1], Test$AirNow[I25D_pos])
 compare4<- cbind(preds4[I25D_pos,1], Test$AirNow[I25D_pos])
 compare5<- cbind(preds5[I25D_pos,1], Test$AirNow[I25D_pos])
-compare6<- cbind(preds6[I25D_pos,1], Test$AirNow[I25D_pos])
-compare7<- cbind(preds7[I25D_pos,1], Test$AirNow[I25D_pos])
 
 #RMSE:
 sqrt(mean((compare1[,1] - compare1[,2])^2))
@@ -73,8 +79,6 @@ sqrt(mean((compare2[,1] - compare2[,2])^2))
 sqrt(mean((compare3[,1] - compare3[,2])^2))
 sqrt(mean((compare4[,1] - compare4[,2])^2))
 sqrt(mean((compare5[,1] - compare5[,2])^2))
-sqrt(mean((compare6[,1] - compare6[,2])^2))
-sqrt(mean((compare7[,1] - compare7[,2])^2))
 
 #R^2:
 (cor(compare1[,1], compare1[,2]))^2
@@ -82,8 +86,6 @@ sqrt(mean((compare7[,1] - compare7[,2])^2))
 (cor(compare3[,1], compare3[,2]))^2
 (cor(compare4[,1], compare4[,2]))^2
 (cor(compare5[,1], compare5[,2]))^2
-(cor(compare6[,1], compare6[,2]))^2
-(cor(compare7[,1], compare7[,2]))^2
 
 ###Other models: get from 2-Archived_final_training.R
 these_results<- function(preds){
@@ -170,17 +172,17 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       Preds<- append(Preds, preds)
       Obs<- append(Obs, testing$AirNow)
     }else if((model_type == "LR5")&(go)){
-      model<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend, data = training)
+      model<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + sin_Month + cos_Time + Weekend, data = training)
       preds<- predict(model, testing)
       Preds<- append(Preds, preds)
       Obs<- append(Obs, testing$AirNow)
     }else if((model_type == "LR6")&(go)){
-      model<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend + Near_hwy, data = training)
+      model<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + sin_Month + cos_Time + Weekend + Near_hwy, data = training)
       preds<- predict(model, testing)
       Preds<- append(Preds, preds)
       Obs<- append(Obs, testing$AirNow)
     }else if((model_type == "LR7")&(go)){
-      model<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend + Aroad_500, data = training)
+      model<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + sin_Month + cos_Time + Weekend + Aroad_500, data = training)
       preds<- predict(model, testing)
       Preds<- append(Preds, preds)
       Obs<- append(Obs, testing$AirNow)
@@ -212,7 +214,7 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
         rm("model")
       }
     }else if((model_type == "RF1")&(go)){
-      vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "cos_Time", "Weekend", "AirNow")
+      vars<- c("PM25", "Temperature", "Humidity", "AirNow")
       training<- training[, vars]
       
       myControl<- trainControl(number = 1, savePredictions = "final", 
@@ -221,7 +223,7 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       model <- train(AirNow ~ ., 
                         data = training, trControl = myControl,
                         method = "ranger",
-                        tuneGrid = expand.grid( .mtry = 4,
+                        tuneGrid = expand.grid( .mtry = 3,
                                                 .splitrule = "extratrees",
                                                 .min.node.size = 2 ),
                         metric = "RMSE")
@@ -233,7 +235,8 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       
       rm("model")
     }else if((model_type == "RF2")&(go)){
-      vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", "Near_hwy")
+      vars<- c("cos_Time", "sin_Time", "sin_Month", "cos_Month", "Weekend", 
+               "PM25", "Temperature", "Humidity", "AirNow")
       training<- training[, vars]
       
       myControl<- trainControl(number = 1, savePredictions = "final", 
@@ -242,7 +245,7 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       model <- train(AirNow ~ ., 
                      data = training, trControl = myControl,
                      method = "ranger",
-                     tuneGrid = expand.grid( .mtry = 4,
+                     tuneGrid = expand.grid( .mtry = 5,
                                              .splitrule = "extratrees",
                                              .min.node.size = 2 ),
                      metric = "RMSE")
@@ -254,7 +257,8 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       
       rm("model")
     }else if((model_type == "RF3")&(go)){
-      vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", "Aroad_500")
+      vars<- c("cos_Time", "sin_Time", "sin_Month", "cos_Month", "Weekend", 
+               "PM25", "Temperature", "Humidity", "AirNow", "Near_hwy")
       training<- training[, vars]
       
       myControl<- trainControl(number = 1, savePredictions = "final", 
@@ -263,7 +267,7 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       model <- train(AirNow ~ ., 
                      data = training, trControl = myControl,
                      method = "ranger",
-                     tuneGrid = expand.grid( .mtry = 4,
+                     tuneGrid = expand.grid( .mtry = 7,
                                              .splitrule = "extratrees",
                                              .min.node.size = 2 ),
                      metric = "RMSE")
@@ -275,8 +279,8 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       
       rm("model")
     }else if((model_type == "RF4")&(go)){
-      vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", 
-               "Near_hwy", "Hwy_rush")
+      vars<- c("cos_Time", "sin_Time", "sin_Month", "cos_Month", "Weekend", 
+               "PM25", "Temperature", "Humidity", "AirNow", "Aroad_500")
       training<- training[, vars]
       
       myControl<- trainControl(number = 1, savePredictions = "final", 
@@ -285,7 +289,7 @@ Test_set<- function(tr_opt, ts_opt, model_type, sensor){
       model <- train(AirNow ~ ., 
                      data = training, trControl = myControl,
                      method = "ranger",
-                     tuneGrid = expand.grid( .mtry = 6,
+                     tuneGrid = expand.grid( .mtry = 7,
                                              .splitrule = "extratrees",
                                              .min.node.size = 2 ),
                      metric = "RMSE")
@@ -340,9 +344,9 @@ results(LM6_camp)
 LM6_denv<- Test_set(8,1,"LR6", "I25_Denver")
 results(LM6_denv)
 
-LM7_camp<- Test_set(3,1,"LR7", "CAMP")
+LM7_camp<- Test_set(8,1,"LR7", "CAMP")
 results(LM7_camp)
-LM7_denv<- Test_set(3,1,"LR7", "I25_Denver")
+LM7_denv<- Test_set(8,1,"LR7", "I25_Denver")
 results(LM7_denv)
 
 #Mixed linear model results:
@@ -357,24 +361,24 @@ RE2_denv<- Test_set(8,1,"RE2", "I25_Denver")
 results(RE2_denv)
 
 #Random forest results:
-RF1_camp<- Test_set(8,2,"RF1", "CAMP")
+RF1_camp<- Test_set(3,1,"RF1", "CAMP")
 results(RF1_camp)
-RF1_denv<- Test_set(8,2,"RF1", "I25_Denver")
+RF1_denv<- Test_set(3,1,"RF1", "I25_Denver")
 results(RF1_denv)
 
-RF2_camp<- Test_set(7,2,"RF2", "CAMP")
+RF2_camp<- Test_set(3,2,"RF2", "CAMP")
 results(RF2_camp)
-RF2_denv<- Test_set(7,2,"RF2", "I25_Denver")
+RF2_denv<- Test_set(3,2,"RF2", "I25_Denver")
 results(RF2_denv)
 
-RF3_camp<- Test_set(8,2,"RF3", "CAMP")
+RF3_camp<- Test_set(7,2,"RF3", "CAMP")
 results(RF3_camp)
-RF3_denv<- Test_set(8,2,"RF3", "I25_Denver")
+RF3_denv<- Test_set(7,2,"RF3", "I25_Denver")
 results(RF3_denv)
 
-RF4_camp<- Test_set(8,2,"RF4", "CAMP")
+RF4_camp<- Test_set(7,2,"RF4", "CAMP")
 results(RF4_camp)
-RF4_denv<- Test_set(8,2,"RF4", "I25_Denver")
+RF4_denv<- Test_set(7,2,"RF4", "I25_Denver")
 results(RF4_denv)
 
 

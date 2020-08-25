@@ -8,11 +8,9 @@ DATA<- read.csv("Data/Clean_collocated_hourly_data.csv")
 DATA$Date<- as.Date(DATA$Date)
 
 #Adding in other spatial and temporal variables:
-DATA$Rush_hour<- DATA$Weekend & (DATA$Time %in% c(8:9, 16:18))
 near_hwy<- data.frame(ID=c("NJH", "LaCasa", "I25.1", "I25.2", "I25.3"), 
                       Near_hwy=c(FALSE, FALSE, TRUE, TRUE, TRUE))
 DATA<- inner_join(DATA, near_hwy, by = "ID")
-DATA$Hwy_rush<- DATA$Near_hwy & DATA$Rush_hour
 
 days<- as.numeric(sapply(DATA$Date, function(s){strsplit(as.character(s),"-")[[1]][3]}))
 weeks<- seq.Date(min(DATA$Date), max(DATA$Date), by = 7)
@@ -38,11 +36,11 @@ LR_OTF<- function(type){
   }else if(type == "LR4"){
     vars<- c("PM25", "Temperature", "Humidity", "Aroad_500", "AirNow")
   }else if(type == "LR5"){
-    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "cos_Time", "Weekend", "AirNow")
+    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "sin_Month", "cos_Time", "Weekend", "AirNow")
   }else if(type == "LR6"){
-    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "cos_Time", "Weekend", "Near_hwy", "AirNow")
+    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "sin_Month", "cos_Time", "Weekend", "Near_hwy", "AirNow")
   }else if(type == "LR7"){
-    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "cos_Time", "Weekend", "Aroad_500", "AirNow")
+    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "sin_Month", "cos_Time", "Weekend", "Aroad_500", "AirNow")
   }
   
   #Run optimization:
@@ -157,18 +155,17 @@ RF_OTF<- function(type){
   myControl<- trainControl(number = 1, savePredictions = "final", 
                            verboseIter = FALSE)
   if(type == "RF1"){
-    vars<- c("PM25", "Temperature", "Humidity", "cos_Month", "cos_Time", "Weekend", "AirNow")
-    Mtry<- 4
+    vars<- c("PM25", "Temperature", "Humidity", "AirNow")
+    Mtry<- 3
   }else if(type == "RF2"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", "Near_hwy")
-    Mtry<- 4
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow")
+    Mtry<- 5
   }else if(type == "RF3"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", "Aroad_500")
-    Mtry<- 4
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", "Near_hwy")
+    Mtry<- 7
   }else if(type == "RF4"){
-    vars<- c("cos_Time", "cos_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", 
-             "Near_hwy", "Hwy_rush")
-    Mtry<- 6
+    vars<- c("cos_Time", "sin_Time", "cos_Month", "sin_Month", "Weekend", "PM25", "Temperature", "Humidity", "AirNow", "Aroad_500")
+    Mtry<- 7
   }
   
   #Run optimization:

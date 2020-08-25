@@ -5,11 +5,9 @@ DATA<- read.csv("Data/Clean_collocated_hourly_data.csv")
 DATA$Date<- as.Date(DATA$Date)
 
 #Adding in other spatial and temporal variables:
-DATA$Rush_hour<- DATA$Weekend & (DATA$Time %in% c(8:9, 16:18))
 near_hwy<- data.frame(ID=c("NJH", "LaCasa", "I25.1", "I25.2", "I25.3"), 
                       Near_hwy=c(FALSE, FALSE, TRUE, TRUE, TRUE))
 DATA<- inner_join(DATA, near_hwy, by = "ID")
-DATA$Hwy_rush<- DATA$Near_hwy & DATA$Rush_hour
 
 days<- as.numeric(sapply(DATA$Date, function(s){strsplit(as.character(s),"-")[[1]][3]}))
 weeks<- seq.Date(min(DATA$Date), max(DATA$Date), by = 7)
@@ -29,9 +27,12 @@ LM1<- lm(AirNow ~ PM25, DATA)
 LM2<- lm(AirNow ~ PM25 + Temperature + Humidity, DATA)
 LM3<- lm(AirNow ~ PM25 + Temperature + Humidity + Near_hwy, DATA)
 LM4<- lm(AirNow ~ PM25 + Temperature + Humidity + Aroad_500, DATA)
-LM5<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend, DATA)
-LM6<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend + Near_hwy, DATA)
-LM7<- lm(AirNow ~ PM25 + Temperature + Humidity + cos_Month + cos_Time + Weekend + Aroad_500, DATA)
+LM5<- lm(AirNow ~ PM25 + Temperature + Humidity + Weekend + cos_Time + cos_Month + sin_Month, DATA)
+LM6<- lm(AirNow ~ PM25 + Temperature + Humidity + Near_hwy + Weekend + cos_Time + cos_Month + sin_Month, DATA)
+LM7<- lm(AirNow ~ PM25 + Temperature + Humidity + Aroad_500 + Weekend + cos_Time + cos_Month + sin_Month, DATA)
+
+# library(olsrr)
+# VIF<- data.frame(ols_vif_tol(LM5))
 
 #Mixed linear models:
 library(nlme)
@@ -39,7 +40,7 @@ nRE1<- lme(AirNow ~ PM25 + Temperature+ Humidity, data = DATA, random = ~1 | ID)
 nRE2<- lme(AirNow ~ PM25 + Temperature+ Humidity, data = DATA, 
            random = ~1 + PM25 | ID)
 nRE3<- lme(AirNow ~ PM25 + Temperature+ Humidity + cos_Month + cos_Time + Weekend,
-           data = DATA, random = ~1 + PM25 | ID)
+           data = DATA, random = ~1 + PM25 | ID) #Removing sin_Month for convergence issues
 
 performance<- function(model, DATA){
   vars<- names(model$coefficients$fixed[-1])
@@ -56,8 +57,8 @@ performance<- function(model, DATA){
 for(i in 1:3){
   model_name<- paste0("nRE", as.character(i))
   print(paste("Model =", model_name))
-  model<- get(model_name, DATA)
-  performance(model)
+  model<- get(model_name)
+  performance(model, DATA)
 }
 
 #Machine learning:
@@ -75,8 +76,6 @@ run_LOO(type = "RF2", train_pos = c(1:dim(dataset)[1]), name = "None")
 run_LOO(type = "RF3", train_pos = c(1:dim(dataset)[1]), name = "None")
 run_LOO(type = "RF4", train_pos = c(1:dim(dataset)[1]), name = "None")
 run_LOO(type = "RF5", train_pos = c(1:dim(dataset)[1]), name = "None")
-run_LOO(type = "RF6", train_pos = c(1:dim(dataset)[1]), name = "None")
-run_LOO(type = "RF7", train_pos = c(1:dim(dataset)[1]), name = "None")
 
 sensors<- c("NJH", "LaCasa", "I25.1", "I25.2", "I25.3")
 
@@ -99,7 +98,5 @@ for(s in sensors){
   run_LOO(type = "RF3", train_pos = which(DATA$ID != s), name = s)
   run_LOO(type = "RF4", train_pos = which(DATA$ID != s), name = s)
   run_LOO(type = "RF5", train_pos = which(DATA$ID != s), name = s)
-  run_LOO(type = "RF6", train_pos = which(DATA$ID != s), name = s)
-  run_LOO(type = "RF7", train_pos = which(DATA$ID != s), name = s)
 }
 sink()
